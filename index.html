@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Todos/Goals</title>
+    <!--Redux Library source-->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
 </head>
 <body>
@@ -18,6 +19,7 @@
         <ul id='goals'></ul>
     </div>
     <script type="text/javascript">
+        
         //makes unique id
         function generateId () {
             return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36); 
@@ -61,6 +63,23 @@
                 id,
             }
         }
+        
+        //Middleware function. Redux will use Middleware functions before they dispatch to the state
+        const checker = (store) => (next) => (action) => {
+            if (
+                action.type === ADD_TODO &&
+                action.todo.name.toLowerCase().indexOf('bitcoin') !== -1
+            ){
+                return alert("nope. that's a bad idea")
+                }
+            if (
+                action.type === ADD_GOAL &&
+                action.goal.name.toLowerCase().indexOf('bitcoin') !== -1
+            ){
+                return alert("nope. that's a bad idea")
+            }
+            return next(action)
+        }
 
         // Reducer function
         function todos (state = [], action) {
@@ -87,11 +106,13 @@
                     return state
             }
         }
-
+        
+        //Creates store
         const store = Redux.createStore(Redux.combineReducers({
             todos,
             goals,
-        }))
+        }), Redux.applyMiddleware(checker))
+        
 
         store.subscribe(() => {
             const { goals, todos } = store.getState()
